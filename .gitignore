@@ -1,6 +1,7 @@
 node_modules
 build
 test
+config.json
 src/**.js
 .idea/*
 
