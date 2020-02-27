@@ -31,7 +31,10 @@
     "version": "standard-version",
     "reset": "git clean -dfx && git reset --hard && npm i",
     "clean": "trash build test",
-    "prepare-release": "run-s reset test cov:check doc:html version doc:publish"
+    "prepare-release": "run-s reset test cov:check doc:html version doc:publish",
+    "start": "ENABLE_NODE_LOG=YES pm2 start pm2.json",
+    "stop": "pm2 stop pm2.json",
+    "restart": "npm stop && npm start"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",

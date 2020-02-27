@@ -1,0 +1,14 @@
+{
+  "name"        : "CUP Online Judge judger daemon service",
+  "script"      : "./build/main/index.js",
+  "exec_mode"   : "fork",
+  "cwd"         : "./",
+  "watch_options": {
+    "followSymlinks": false
+  },
+  "error_file" : "./logs/judger-app-err.log",
+  "out_file"   : "./logs/judger-app-out.log",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
