@@ -1,6 +1,6 @@
 {
   "name"        : "CUP Online Judge judger daemon service",
-  "script"      : "./build/main/index.js",
+  "script"      : "./build/index.js",
   "exec_mode"   : "fork",
   "cwd"         : "./",
   "watch_options": {
