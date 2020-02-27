@@ -86,13 +86,7 @@ class LocalJudger extends eventEmitter {
     this.platform = os.platform();
     this.errorHandler = null;
     this.SUBMISSION_INFO_PATH = path.join(config.judger.oj_home, "submission");
-    let wsport: any;
-    if (process.env.MODE === "websocket") {
-      wsport = process.env.WSPORT || config.judger.port;
-    }
-    else {
-      wsport = process.env.WSPORT || 0;
-    }
+    let wsport: any = process.env.WSPORT || config.judger.port;
     this.websocketServer = WebsocketServer.setPort(wsport).setAdapter(WebsocketServerAdapter).startServer();
     if (this.platform !== "linux" && this.platform !== "darwin") {
       throw new Error("Your platform doesn't support right now");

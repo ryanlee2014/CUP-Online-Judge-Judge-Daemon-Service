@@ -2,6 +2,7 @@
   "port": 5110,
   "judger": {
     "oj_home": "",
-    "port": 5100
+    "port": 5100,
+    "oj_judge_num": 8
   }
 }
