@@ -1,6 +1,6 @@
 {
   "port": 5110,
-  "judge": {
+  "judger": {
     "oj_home": "",
     "port": 5100
   }

@@ -10,7 +10,7 @@ export interface IWebsocketServerAdapter {
 }
 
 export class WebsocketServer {
-  public PORT = process.env.PORT || config.judge.port || 0;
+  public PORT = process.env.PORT || config.judger.port || 0;
   public websocketServer?: WebSocket.Server;
   public adapter?: IWebsocketServerAdapter;
 
