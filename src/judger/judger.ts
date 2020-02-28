@@ -42,12 +42,16 @@ class LocalJudger extends eventEmitter {
       if (thisTarget.judgerExist) {
         return method.apply(this, args);
       }
+      else if (fsDefault.existsSync(`${process.cwd()}/wsjudged`)) {
+        thisTarget.judgerExist = true;
+        return method.apply(this, args);
+      }
       else {
         return false;
       }
     }
   }
-  public readonly judgerExist = fsDefault.existsSync(`${process.cwd()}/wsjudged`);
+  public judgerExist = fsDefault.existsSync(`${process.cwd()}/wsjudged`);
   public readonly websocketServer: ws;
   public oj_home = "";
   public judge_queue = [];
