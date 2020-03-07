@@ -31,6 +31,7 @@ class BindSocketEventManager {
     this.distinceSocketSet[this.id++] = socket;
     socket.on("submission", (payload) => {
       const {solutionId, data, admin} = payload;
+      console.log(`Get Submission: ${solutionId}`);
       JudgeManager.updateSubmissionInfo(solutionId, data);
       this.setSocket(solutionId, socket);
       LocalJudger.addTask(solutionId, admin);
