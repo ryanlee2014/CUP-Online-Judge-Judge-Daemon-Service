@@ -8,6 +8,24 @@ interface ISocket extends Socket {
   socketId: string | number
 }
 
+interface ISubmissionInfo {
+  solution_id: number,
+  source: string,
+  custom_input: string | undefined | null,
+  test_run: boolean,
+  language: number,
+  user_id: string,
+  problem_id: number,
+  spj: boolean,
+  time_limit: number,
+  memory_limit: number
+}
+
+interface IRejectInfo {
+  reason: string,
+  solutionId: number | string
+}
+
 class BindSocketEventManager {
 
   id = 0;
@@ -29,12 +47,22 @@ class BindSocketEventManager {
   public bindSocket (socket: ISocket) {
     socket.socketId = this.id;
     this.distinceSocketSet[this.id++] = socket;
-    socket.on("submission", (payload) => {
+    socket.on("submission", async (payload) => {
       const {solutionId, data, admin} = payload;
-      console.log(`Get Submission: ${solutionId}`);
-      JudgeManager.updateSubmissionInfo(solutionId, data);
-      this.setSocket(solutionId, socket);
-      LocalJudger.addTask(solutionId, admin);
+      const problemId = (data as ISubmissionInfo).problem_id;
+      if (await LocalJudger.problemDataExist(problemId)) {
+        console.log(`Get Submission: ${solutionId}`);
+        JudgeManager.updateSubmissionInfo(solutionId, data);
+        this.setSocket(solutionId, socket);
+        LocalJudger.addTask(solutionId, admin);
+      }
+      else {
+        console.log(`Lost data: ${problemId}`);
+        socket.emit("reject_judge", {
+          reason: "No data",
+          solutionId: solutionId
+        } as IRejectInfo);
+      }
     });
 
     socket.on("status", () => {

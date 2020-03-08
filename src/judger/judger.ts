@@ -181,6 +181,16 @@ class LocalJudger extends eventEmitter {
     return true;
   }
 
+  async problemDataExist (problemId: number | string) {
+    try {
+      await fsDefault.promises.access(path.join(this.oj_home, "data", problemId + ""));
+      return true;
+    }
+    catch (e) {
+      return false;
+    }
+  }
+
   /**
    * （回调）获取剩余的任务
    */
