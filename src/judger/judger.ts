@@ -8,7 +8,7 @@ import events from "events";
 import fsDefault from "fs";
 import os from "os";
 import path from "path";
-import {v1 as uuidV1} from "uuid";
+import UUIDSocketManager from '../container/UUIDSocketManager';
 import config from '../lib/config';
 import Tolerable from '../lib/decorator/Tolerable';
 import mkdir from '../lib/mkdir';
@@ -97,9 +97,9 @@ class LocalJudger extends eventEmitter {
     }
   }
 
-  public errorHandle(solutionId: number, runnerId: number) {
+  public errorHandle(solutionId: number, runnerId: number, socketId: number) {
     if (this.errorHandler !== null) {
-      this.errorHandler.record(solutionId, runnerId);
+      this.errorHandler.record(solutionId, runnerId, socketId);
     }
   }
 
@@ -149,23 +149,23 @@ class LocalJudger extends eventEmitter {
   }
 
   @Tolerable
-  public async writeSubmissionInfoToDisk (solutionId: number) {
+  public async writeSubmissionInfoToDisk (solutionId: number, socketId: number) {
     await this.makeShareMemoryDirectory();
     const submissionInfo = await JudgeManager.buildSubmissionInfo(solutionId);
-    const uuid = uuidV1();
+    const uuid = UUIDSocketManager.getUUIDInfo(socketId, solutionId);
     // @ts-ignore
     await fs.writeFileAsync(path.join(this.SUBMISSION_INFO_PATH, `${uuid}.json`), JSON.stringify(submissionInfo), { mode: 0o777 });
     return uuid;
   }
 
   @LocalJudger.JudgeExists
-  public async addTask(solution_id: any, admin: boolean, no_sim = false, priority = 1, gray_task = false) {
+  public async addTask(solution_id: any, admin: boolean, no_sim = false, priority = 1, socketId: number = 1) {
     solution_id = LocalJudger.formatSolutionId(solution_id);
     if (!this.judging_queue.includes(solution_id) &&
       !this.in_waiting_queue[solution_id]) {
       this.updateLatestSolutionId(solution_id);
       if (this.judge_queue.length !== 0) {
-        this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, gray_task);
+        this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, socketId);
         this.judging_queue.push(solution_id);
       } else {
         this.waiting_queue.push({
@@ -173,7 +173,7 @@ class LocalJudger extends eventEmitter {
           priority,
           admin,
           no_sim,
-          gray_task
+          socketId
         });
         this.in_waiting_queue[solution_id] = true;
       }
@@ -201,9 +201,9 @@ class LocalJudger extends eventEmitter {
       const solution_id = task.solution_id;
       const admin = task.admin;
       const no_sim = task.no_sim;
-      const gray_task = task.gray_task;
+      const socketId = task.socketId;
       delete this.in_waiting_queue[solution_id];
-      this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, gray_task);
+      this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, socketId);
       this.judging_queue.push(solution_id);
     }
   }
@@ -215,12 +215,12 @@ class LocalJudger extends eventEmitter {
    * @param {Number} runner_id 判题机ID
    * @param {Boolean} admin 管理员提交
    * @param {Boolean} no_sim 不启用判重
-   * @param {Boolean} gray_task 灰度任务
+   * @param {Boolean} socketId socket连接的ID
    * @returns {Promise<void>} 返回一个空Promise
    */
 
-  public async runJudger(solution_id: number, runner_id: number, admin = false, no_sim = false, _gray_task = false) {
-    const judgerId = await this.writeSubmissionInfoToDisk(solution_id);
+  public async runJudger(solution_id: number, runner_id: number, admin = false, no_sim = false, socketId: number) {
+    const judgerId = await this.writeSubmissionInfoToDisk(solution_id, socketId);
     const stderrBuilder: any = [], stdoutBuilder: any = [];
     const args: any[] = ["-solution_id", solution_id, "-runner_id", runner_id, "-dir", this.oj_home, "-judger_id", judgerId];
     if (!judgerId) {
@@ -259,7 +259,7 @@ class LocalJudger extends eventEmitter {
       if (null === EXITCODE || EXITCODE) {
         console.log("stdout: \n", stdoutBuilder.join(""));
         console.log("stderr: \n", stderrBuilder.join(""));
-        this.errorHandle(solution_id, runner_id);
+        this.errorHandle(solution_id, runner_id, socketId);
       }
     });
     judger.stdout.on("data", (resp: any) => {stdoutBuilder.push(resp.toString());});
