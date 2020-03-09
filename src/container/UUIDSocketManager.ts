@@ -23,7 +23,7 @@ class UUIDSocketManager {
   }
 
   static encode (str: string) {
-    return Buffer.from(str).toString("base64");
+    return Buffer.from(str + "").toString("base64");
   }
 
   static encodeIds(socketId: number | string, solutionId: number | string) {
