@@ -8,10 +8,10 @@ export class WebsocketServerAdapter implements IWebsocketServerAdapter {
   }
 
   public async onJudgerMessage(_server: WebSocket, message: any) {
-    const {solution_id, finish, judgerId} = message;
+    const {finish, judgerId} = message;
     BindSocketEventManager.getSocket(judgerId).emit("judger", message);
     if (finish) {
-      BindSocketEventManager.removeSocket(solution_id);
+      BindSocketEventManager.removeSocket(judgerId);
     }
   }
 
