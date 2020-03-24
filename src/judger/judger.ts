@@ -182,6 +182,7 @@ class LocalJudger extends eventEmitter {
   }
 
   async problemDataExist (problemId: number | string) {
+    problemId = Math.abs(parseInt(problemId as string));
     try {
       await fsDefault.promises.access(path.join(this.oj_home, "data", problemId + ""));
       return true;
