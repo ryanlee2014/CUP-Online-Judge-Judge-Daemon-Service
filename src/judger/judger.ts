@@ -10,11 +10,11 @@ import os from "os";
 import path from "path";
 import UUIDSocketManager from '../container/UUIDSocketManager';
 import config from '../lib/config';
-import Tolerable from '../lib/decorator/Tolerable';
 import mkdir from '../lib/mkdir';
 import JudgeManager from './JudgeManager';
 import WebsocketServerAdapter from './WebsocketServerAdapter';
 import WebsocketServer, {WebsocketServer as ws} from "./WebsocketServer"
+import TolerableAsync from "../lib/decorator/TolerableAsync";
 const fs: any = Promise.promisifyAll(fsDefault);
 const PriorityQueue = require("tinyqueue");
 const eventEmitter = events.EventEmitter;
@@ -148,7 +148,7 @@ class LocalJudger extends eventEmitter {
     }
   }
 
-  @Tolerable
+  @TolerableAsync
   public async writeSubmissionInfoToDisk (solutionId: number, socketId: number) {
     await this.makeShareMemoryDirectory();
     const submissionInfo = await JudgeManager.buildSubmissionInfo(solutionId);
