@@ -2,10 +2,9 @@
 /**
  * Class LocalJudger
  */
-import Promise from "bluebird";
 import {spawn} from "child_process";
 import events from "events";
-import fsDefault from "fs";
+import fs from "fs";
 import os from "os";
 import path from "path";
 import UUIDSocketManager from '../container/UUIDSocketManager';
@@ -15,7 +14,6 @@ import JudgeManager from './JudgeManager';
 import WebsocketServerAdapter from './WebsocketServerAdapter';
 import WebsocketServer, {WebsocketServer as ws} from "./WebsocketServer"
 import TolerableAsync from "../lib/decorator/TolerableAsync";
-const fs: any = Promise.promisifyAll(fsDefault);
 const PriorityQueue = require("tinyqueue");
 const eventEmitter = events.EventEmitter;
 class LocalJudger extends eventEmitter {
@@ -42,7 +40,7 @@ class LocalJudger extends eventEmitter {
       if (thisTarget.judgerExist) {
         return method.apply(this, args);
       }
-      else if (fsDefault.existsSync(`${process.cwd()}/wsjudged`)) {
+      else if (fs.existsSync(`${process.cwd()}/wsjudged`)) {
         thisTarget.judgerExist = true;
         return method.apply(this, args);
       }
@@ -51,7 +49,7 @@ class LocalJudger extends eventEmitter {
       }
     }
   }
-  public judgerExist = fsDefault.existsSync(`${process.cwd()}/wsjudged`);
+  public judgerExist = fs.existsSync(`${process.cwd()}/wsjudged`);
   public readonly websocketServer: ws;
   public oj_home = "";
   public judge_queue = [];
@@ -133,15 +131,8 @@ class LocalJudger extends eventEmitter {
 
   public async makeShareMemoryDirectory () {
     try {
-      await fs.accessAsync("/dev/shm/cupoj/submission");
       // @ts-ignore
-      await mkdir("/dev/shm/cupoj/submission");
-    }
-    catch (e) {
-      // do nothing
-    }
-    try {
-      await fs.symlinkAsync("/dev/shm/cupoj/submission", this.SUBMISSION_INFO_PATH);
+      await mkdir("/home/judge/submission");
     }
     catch (e) {
       // do nothing
@@ -154,7 +145,7 @@ class LocalJudger extends eventEmitter {
     const submissionInfo = await JudgeManager.buildSubmissionInfo(solutionId);
     const uuid = UUIDSocketManager.getUUIDInfo(socketId, solutionId);
     // @ts-ignore
-    await fs.writeFileAsync(path.join(this.SUBMISSION_INFO_PATH, `${uuid}.json`), JSON.stringify(submissionInfo), { mode: 0o777 });
+    await fs.writeFileSync(path.join(this.SUBMISSION_INFO_PATH, `${uuid}.json`), JSON.stringify(submissionInfo), { mode: 0o777 });
     return uuid;
   }
 
@@ -184,7 +175,7 @@ class LocalJudger extends eventEmitter {
   async problemDataExist (problemId: number | string) {
     problemId = Math.abs(parseInt(problemId as string));
     try {
-      await fsDefault.promises.access(path.join(this.oj_home, "data", problemId + ""));
+      await fs.promises.access(path.join(this.oj_home, "data", problemId + ""));
       return true;
     }
     catch (e) {
@@ -224,7 +215,7 @@ class LocalJudger extends eventEmitter {
     const judgerId = await this.writeSubmissionInfoToDisk(solution_id, socketId);
     const stderrBuilder: any = [], stdoutBuilder: any = [];
     const args: any[] = ["-solution_id", solution_id, "-runner_id", runner_id, "-dir", this.oj_home, "-judger_id", judgerId];
-    if (!judgerId) {
+    if (judgerId) {
       args.push("-no-mysql");
     }
     if (admin) {
@@ -233,6 +224,7 @@ class LocalJudger extends eventEmitter {
     if (no_sim) {
       args.push("-no-sim");
     }
+    console.log(`Running arguments: `, args.join(" "));
     const judger = spawn(`${process.cwd()}/wsjudged`, args);
     if (process.env.NODE_ENV === "test") {
       console.log("arguments: ", args);
