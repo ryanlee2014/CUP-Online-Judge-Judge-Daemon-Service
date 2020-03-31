@@ -66,6 +66,9 @@ class BindSocketEventManager {
     socket.on('submission', async (payload: ISubmissionRequest) => {
       const { solutionId, data, admin, no_sim, priority } = payload;
       const uuid = UUIDSocketManager.generateUUID();
+      if (UUIDSocketManager.getUUIDInfo(socket.socketId, solutionId)) {
+        return;
+      }
       UUIDSocketManager.setUUIDSocketInfo(uuid, socket.socketId, solutionId);
       UUIDSocketManager.setUUIDInfo(socket.socketId, solutionId, uuid);
       const problemId = (data as ISubmissionInfo).problem_id;

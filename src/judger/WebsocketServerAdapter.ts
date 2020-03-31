@@ -1,6 +1,7 @@
 import BindSocketEventManager from '../websocket/event/BindSocketEventManager';
 import {IWebsocketServerAdapter } from './WebsocketServer';
 import WebSocket from "ws";
+import UUIDSocketManager from "../container/UUIDSocketManager";
 
 export class WebsocketServerAdapter implements IWebsocketServerAdapter {
   public onError(_server: WebSocket, message: any): any {
@@ -11,6 +12,9 @@ export class WebsocketServerAdapter implements IWebsocketServerAdapter {
     const {finish, judgerId} = message;
     BindSocketEventManager.getSocket(judgerId).emit("judger", message);
     if (finish) {
+      const {solutionId, socketId} = UUIDSocketManager.getUUIDSocketInfo(judgerId);
+      UUIDSocketManager.removeUUIDInfo(socketId, solutionId);
+      UUIDSocketManager.removeUUIDSocketInfo(judgerId);
       BindSocketEventManager.removeSocket(judgerId);
     }
   }
