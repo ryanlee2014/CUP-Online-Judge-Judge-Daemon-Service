@@ -233,8 +233,10 @@ class LocalJudger extends eventEmitter {
     if (no_sim) {
       args.push("-no-sim");
     }
+    args.push("-stdin");
     console.log(`Running arguments: `, args.join(" "));
     const judger = spawn(`${process.cwd()}/wsjudged`, args);
+    judger.stdin.write(JSON.stringify(await JudgeManager.buildSubmissionInfo(solution_id)) + "\n");
     if (process.env.NODE_ENV === "test") {
       console.log("arguments: ", args);
     }
