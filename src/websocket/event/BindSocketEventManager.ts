@@ -105,7 +105,9 @@ class BindSocketEventManager {
 
   removeSocket(solutionId: string) {
     if (this.socketSet[solutionId]) {
-      delete this.socketSet[solutionId];
+      setTimeout(() => {
+        delete this.socketSet[solutionId];
+      }, 30000);
     }
   }
 }

@@ -32,6 +32,9 @@ class UUIDSocketManager {
 
   setUUIDSocketInfo(uuid: string, socketId: number | string, solutionId: number | string) {
     this.uuidMatcher[uuid] = UUIDSocketManager.encodeIds(socketId, solutionId);
+    setTimeout(() => {
+      this.removeUUIDSocketInfo(uuid);
+    }, 30000);
     return this;
   }
 
@@ -50,6 +53,9 @@ class UUIDSocketManager {
   setUUIDInfo(socketId: number | string, solutionId: number | string, uuid: string) {
     const encoded = UUIDSocketManager.encodeIds(socketId, solutionId);
     this.solutionMatcher[encoded] = uuid;
+    setTimeout(() => {
+      this.removeUUIDInfo(socketId, solutionId);
+    }, 30000);
     return this;
   }
 
