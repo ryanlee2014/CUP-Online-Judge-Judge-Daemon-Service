@@ -38,6 +38,12 @@ class UUIDSocketManager {
     return this;
   }
 
+  setUUIDSocketInfoTimer(uuid: string) {
+    setTimeout(() => {
+      this.removeUUIDSocketInfo(uuid);
+    }, 30000);
+  }
+
   removeUUIDSocketInfo(uuid: string) {
     if (Object.prototype.hasOwnProperty.call(this.uuidMatcher, uuid)) {
       delete this.uuidMatcher[uuid];
@@ -53,10 +59,13 @@ class UUIDSocketManager {
   setUUIDInfo(socketId: number | string, solutionId: number | string, uuid: string) {
     const encoded = UUIDSocketManager.encodeIds(socketId, solutionId);
     this.solutionMatcher[encoded] = uuid;
+    return this;
+  }
+
+  setUUIDInfoTimer(socketId: number | string, solutionId: number | string) {
     setTimeout(() => {
       this.removeUUIDInfo(socketId, solutionId);
     }, 30000);
-    return this;
   }
 
   removeUUIDInfo(socketId: number | string, solutionId: number | string) {

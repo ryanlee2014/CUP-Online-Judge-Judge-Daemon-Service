@@ -200,6 +200,7 @@ class LocalJudger extends eventEmitter {
     }
   }
 
+  // @ts-ignore
   private async delay(milisecond: number) {
     return await new Promise(resolve => {
       setTimeout(() => {
@@ -221,7 +222,8 @@ class LocalJudger extends eventEmitter {
 
   public async runJudger(solution_id: number, runner_id: number, admin = false, no_sim = false, socketId: number) {
     const judgerId = await this.writeSubmissionInfoToDisk(solution_id, socketId);
-    await this.delay(100); // docker fail work around
+    UUIDSocketManager.setUUIDInfoTimer(socketId, solution_id);
+    UUIDSocketManager.setUUIDSocketInfoTimer(UUIDSocketManager.getUUIDInfo(solution_id, socketId));
     const stderrBuilder: any = [], stdoutBuilder: any = [];
     const args: any[] = ["-solution_id", solution_id, "-runner_id", runner_id, "-dir", this.oj_home, "-judger_id", judgerId];
     if (judgerId) {
