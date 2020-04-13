@@ -149,6 +149,16 @@ class LocalJudger extends eventEmitter {
     return uuid;
   }
 
+  /**
+   * 运行后台判题机
+   * @param {Number} solution_id 提交ID
+   * @param {boolean} admin 提交是否来自管理员
+   * @param {boolean} no_sim 提交是否启用判重
+   * @param {Number} priority 判题优先级
+   * @param {Number} socketId SocketIO的ID
+   * @returns {Promise<void>} 返回一个空Promise
+   */
+
   @LocalJudger.JudgeExists
   public async addTask(solution_id: any, admin: boolean, no_sim = false, priority = 1, socketId: number = 1) {
     solution_id = LocalJudger.formatSolutionId(solution_id);
@@ -171,6 +181,12 @@ class LocalJudger extends eventEmitter {
     }
     return true;
   }
+
+  /**
+   * 运行后台判题机
+   * @param {Number|String} problemId 问题ID
+   * @returns {Promise<Boolean>} 若存在题目文件，则返回true
+   */
 
   async problemDataExist (problemId: number | string) {
     problemId = Math.abs(parseInt(problemId as string));
@@ -200,6 +216,11 @@ class LocalJudger extends eventEmitter {
     }
   }
 
+  /**
+   * 运行后台判题机
+   * @param {Number} milisecond 延迟时间(毫秒)
+   * @returns {Promise<void>} 返回一个空Promise
+   */
   // @ts-ignore
   private async delay(milisecond: number) {
     return await new Promise(resolve => {
