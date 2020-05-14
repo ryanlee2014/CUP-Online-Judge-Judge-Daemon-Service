@@ -143,9 +143,11 @@ class LocalJudger extends eventEmitter {
   public async writeSubmissionInfoToDisk (solutionId: number, socketId: number) {
     await this.makeShareMemoryDirectory();
     const submissionInfo = await JudgeManager.buildSubmissionInfo(solutionId);
+    const submissionInfoJson = JSON.stringify(submissionInfo);
+    console.log(`Solution Id: ${solutionId}, submissionInfo:${submissionInfoJson}`);
     const uuid = UUIDSocketManager.getUUIDInfo(socketId, solutionId);
     // @ts-ignore
-    await fs.writeFileSync(path.join(this.SUBMISSION_INFO_PATH, `${uuid}.json`), JSON.stringify(submissionInfo), { mode: 0o777 });
+    await fs.writeFileSync(path.join(this.SUBMISSION_INFO_PATH, `${uuid}.json`), submissionInfoJson, { mode: 0o777 });
     return uuid;
   }
 
@@ -166,8 +168,8 @@ class LocalJudger extends eventEmitter {
       !this.in_waiting_queue[solution_id]) {
       this.updateLatestSolutionId(solution_id);
       if (this.judge_queue.length !== 0) {
-        this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, socketId);
         this.judging_queue.push(solution_id);
+        this.runJudger(solution_id, this.judge_queue.shift(), admin, no_sim, socketId);
       } else {
         this.waiting_queue.push({
           solution_id,

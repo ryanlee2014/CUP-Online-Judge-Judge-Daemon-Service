@@ -4,7 +4,7 @@ import httpServer from './http-server';
 const io = SocketIo(httpServer);
 
 io.on("connection", async (socket) => {
-  BindSocketEventManager.bindSocket(socket as any);
+  await BindSocketEventManager.bindSocket(socket as any);
 });
 
 export default io;

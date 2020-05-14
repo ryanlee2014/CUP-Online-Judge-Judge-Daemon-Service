@@ -3,6 +3,7 @@ import UUIDSocketManager from '../../container/UUIDSocketManager';
 import ErrorHandler from '../../judger/ErrorHandler';
 import JudgeManager from '../../judger/JudgeManager';
 import LocalJudger from '../../judger/judger';
+import ConcurrentLock from '../../lib/decorator/ConcurrentLock';
 
 LocalJudger.setErrorHandler(ErrorHandler);
 
@@ -54,15 +55,16 @@ class BindSocketEventManager {
     });
   }
 
-  incrementId() {
+  @ConcurrentLock
+  async incrementId() {
     ++this.id;
     this.id %= 1000;
   }
 
-  public bindSocket(socket: ISocket) {
+  public async bindSocket(socket: ISocket) {
     socket.socketId = this.id;
     this.distinceSocketSet[this.id] = socket;
-    this.incrementId();
+    await this.incrementId();
     socket.on('submission', async (payload: ISubmissionRequest) => {
       const { solutionId, data, admin, no_sim, priority } = payload;
       const uuid = UUIDSocketManager.generateUUID();
