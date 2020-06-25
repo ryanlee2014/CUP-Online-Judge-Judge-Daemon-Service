@@ -109,7 +109,7 @@ class BindSocketEventManager {
     if (this.socketSet[solutionId]) {
       setTimeout(() => {
         delete this.socketSet[solutionId];
-      }, 30000);
+      }, 60000);
     }
   }
 }

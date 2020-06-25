@@ -269,7 +269,7 @@ class LocalJudger extends eventEmitter {
     const timeoutID = setTimeout(() => {
       killed = true;
       judger.kill("SIGKILL");
-    }, 1000 * 30);// kill process after 100s
+    }, 1000 * 60);// kill process after 100s
     this.emit("change", this.getStatus().free_judger);
     judger.on("close", (EXITCODE: any) => {
       if (process.env.NODE_ENV === "test") {

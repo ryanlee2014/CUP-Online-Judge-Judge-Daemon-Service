@@ -34,14 +34,14 @@ class UUIDSocketManager {
     this.uuidMatcher[uuid] = UUIDSocketManager.encodeIds(socketId, solutionId);
     setTimeout(() => {
       this.removeUUIDSocketInfo(uuid);
-    }, 30000);
+    }, 60000);
     return this;
   }
 
   setUUIDSocketInfoTimer(uuid: string) {
     setTimeout(() => {
       this.removeUUIDSocketInfo(uuid);
-    }, 30000);
+    }, 60000);
   }
 
   removeUUIDSocketInfo(uuid: string) {
@@ -65,7 +65,7 @@ class UUIDSocketManager {
   setUUIDInfoTimer(socketId: number | string, solutionId: number | string) {
     setTimeout(() => {
       this.removeUUIDInfo(socketId, solutionId);
-    }, 30000);
+    }, 60000);
   }
 
   removeUUIDInfo(socketId: number | string, solutionId: number | string) {
