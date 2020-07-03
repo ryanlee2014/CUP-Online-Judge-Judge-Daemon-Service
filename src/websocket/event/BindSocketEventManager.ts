@@ -7,7 +7,7 @@ import ConcurrentLock from '../../lib/decorator/ConcurrentLock';
 
 LocalJudger.setErrorHandler(ErrorHandler);
 
-interface ISocket extends Socket {
+export interface ISocket extends Socket {
   socketId: number
 }
 
