@@ -7,7 +7,7 @@ class WebsocketClient {
     const registry = global.config.registry;
     this.sockets = registry.map(e => SocketIoClient(e));
     this.sockets.forEach(e => {
-      e.on("connection", () => {
+      e.on("connect", () => {
         e.emit("type", {
           type: "judger"
         });
