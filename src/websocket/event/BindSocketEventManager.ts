@@ -37,9 +37,21 @@ interface IRejectInfo {
   solutionId: number | string
 }
 
+interface SocketEmitter {
+  emit: (...args: any[]) => any
+}
+
+class SocketErrorCollector implements SocketEmitter{
+  emit(event: string | Symbol, payload: any) {
+    console.warn(`[SocketErrorCollector][${new Date().toISOString()}]`, payload);
+  }
+}
+
 class BindSocketEventManager {
 
   id = 0;
+
+  errorCollector = new SocketErrorCollector();
 
   socketSet = {};
 
@@ -101,8 +113,13 @@ class BindSocketEventManager {
     this.socketSet[solutionId] = socket;
   }
 
-  getSocket(solutionId: string): Socket {
-    return this.socketSet[solutionId];
+  getSocket(solutionId: string): SocketEmitter {
+    if (Object.prototype.hasOwnProperty.call(this.socketSet, solutionId)) {
+      return this.socketSet[solutionId];
+    }
+    else {
+      return this.errorCollector;
+    }
   }
 
   removeSocket(solutionId: string) {
