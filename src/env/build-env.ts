@@ -14,7 +14,7 @@ function attachRegistry () {
     // do nothing
   }
   else {
-    if (!fs.existsSync(path.dirname(buildRegistryPath())) {
+    if (!fs.existsSync(path.dirname(buildRegistryPath()))) {
       fs.mkdirSync(path.dirname(buildRegistryPath()));
     }
     fs.writeFileSync(buildRegistryPath(), JSON.stringify(baseRegistry));
