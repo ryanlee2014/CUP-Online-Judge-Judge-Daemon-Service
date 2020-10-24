@@ -3,6 +3,6 @@
   "judger": {
     "oj_home": "/home/judge",
     "port": 5100,
-    "oj_judge_num": 8
+    "oj_judge_num": 65535
   }
 }
