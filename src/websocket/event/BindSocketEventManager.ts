@@ -34,7 +34,8 @@ interface ISubmissionRequest {
 
 interface IRejectInfo {
   reason: string,
-  solutionId: number | string
+  solutionId: number | string,
+  problemId: number | string
 }
 
 interface SocketEmitter {
@@ -95,7 +96,8 @@ class BindSocketEventManager {
         console.log(`Lost data: ${problemId}`);
         socket.emit('reject_judge', {
           reason: 'No data',
-          solutionId: solutionId
+          solutionId: solutionId,
+          problemId
         } as IRejectInfo);
       }
     });
