@@ -227,7 +227,7 @@ class LocalJudger extends eventEmitter {
   private async delay(milisecond: number) {
     return await new Promise(resolve => {
       setTimeout(() => {
-        resolve();
+        resolve(null);
       }, milisecond);
     })
   }
